@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Conway's Game of Life</title>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.css">
+
+	<style type="text/css">
+	.center
+	{
+		text-align: center;
+	}
+
+	.live
+	{
+		background-color: black;
+	}
+
+	.dead
+	{
+		background-color: grey;
+	}
+
+	</style>
+</head>
+<body>
+
+<div class="container">
+	<div class="center">
+		<h1>Conway's Game of Life</h1>
+		<button class="btn btn-success" id="next">Next Generation</button>
+		<br>
+		<div id="tablero">
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="<?=base_url()?>js/bootstrap.js"></script>
+<script type="text/javascript">
+$(function(){
+
+	//Iniciamos el tablero
+	init();
+
+	//Siguiente generacion
+
+	$("#next").click(function(){
+		siguienteGeneracion();
+		localStorage.clear();
+	});
+
+
+
+});
+
+function spread()
+{
+	var n = Math.floor((Math.random()*10)+1);
+	//Si es par esta vivo
+	var state = "";
+	if(n%2==0)
+	{
+		state = "live"
+	}
+	//Si es impar esta muerto;
+	else
+	{
+		state = "dead";
+	}
+
+	return state;
+}
+
+function init()
+{
+	//Estado Inicial del tablero
+	var tablero = "<table class='table table-bordered'>";
+
+	for(var i=0;i<20;i++)
+	{
+		tablero+="<tr>";
+		for(var j=0; j<20;j++)
+		{
+			tablero+="<td class='"+spread()+"' id='"+i+"-"+j+"'></td>";
+		}
+		tablero+="</tr>";
+	}
+
+	$("#tablero").html(tablero);
+}
+
+function siguienteGeneracion()
+{
+
+	for(var i=0;i<20;i++)
+	{
+		for(var j=0;j<20;j++)
+		{
+			var estado = $("#"+i+"-"+j).attr('class');
+			console.log()
+			beGod(i,j,estado);
+		}
+	}
+
+	$("#tablero").html("");
+
+	var newWorld="<table class='table table-bordered'>";
+	for(var i=0;i<20;i++)
+	{
+		newWorld+="<tr>";
+		for(var j=0; j<20;j++)
+		{
+			newWorld+="<td id='"+i+"-"+j+"' class='empty'></td>";
+		}
+		newWorld+="</tr>";
+	}
+	newWorld+= "</table>";
+
+	$("#tablero").html(newWorld);
+
+	
+	for(var i=0;i<20;i++)
+	{
+		for(var j=0; j<20;j++)
+		{
+			$("#"+i+"-"+j).removeClass('empty').addClass(localStorage.getItem(i+","+j));
+		}
+	}
+	
+
+
+}
+
+
+function beGod(x,y,estado)
+{
+	var lix;
+	var liy;
+
+	var lsx;
+	var lsy;
+
+	//Limite inferior X
+	if(x-1>=0)
+	{
+		lix = x-1;
+	}
+	else
+	{
+		lix = x;
+	}
+
+	//Limite Inferior y
+	if(y-1>=0)
+	{
+		liy=y-1;
+	}
+	else
+	{
+		liy=y;
+	}
+
+	//Limite superior x
+	if(x+1<20)
+	{
+		lsx = x+1;
+	}
+	else
+	{
+		lsx = x;
+	}
+
+	//Limite superior y
+	if(y+1<20)
+	{
+		lsy = y+1;
+	}
+	else
+	{
+		lsy = y;
+	}
+
+	//alert("La celda " + x+","+y + "Analizara desde " + lix + "," + liy + "Hasta " + lsx +"," +  lsy);
+	var band = 0;
+	for(var i=lix;i<=lsx;i++)
+	{
+		for(var j=liy;j<=lsy;j++)
+		{
+			if(i==x && j==y)
+			{
+			}
+			else
+			{
+				var state = $("#"+i+"-"+j).attr('class');
+				if(state=='live')
+				{	
+
+					band++;
+				}
+			}
+		}
+	}
+
+//alert("La celda " + x+","+y + "Tiene " + band + "y esta " + estado);
+	if(estado=="live")
+	{
+		if(band==2 || band==3)
+		{
+			//alert("vive");
+			localStorage.setItem(x+","+y,'live');
+		}
+		else
+		{
+			//alert("muere");
+			localStorage.setItem(x+","+y,'dead');
+		}
+	}
+	else 
+	{
+		if(band==3)
+		{
+			//alert("vive");
+			localStorage.setItem(x+","+y,'live');
+		}
+		else
+		{
+			//alert("muere");
+			localStorage.setItem(x+","+y,'dead');
+		}
+
+	}
+
+
+
+
+}
+
+</script>
+</body>
+</html>
